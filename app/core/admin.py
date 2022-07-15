@@ -26,3 +26,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Router)
+admin.site.register(models.Antenna)
+admin.site.register(models.Package)
+admin.site.register(models.Contract)
