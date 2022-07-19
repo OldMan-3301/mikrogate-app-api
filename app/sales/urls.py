@@ -9,6 +9,7 @@ router.register('router', views.RouterViewSet)
 router.register('antenna', views.AntennaViewSet)
 router.register('packages', views.PackageViewSet)
 router.register('contracts', views.ContractViewSet)
+router.register('log', views.LogViewSet)
 
 app_name = 'sales'
 

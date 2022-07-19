@@ -2,7 +2,7 @@ from attr import fields
 from rest_framework import serializers
 from rest_flex_fields import FlexFieldsModelSerializer
 
-from core.models import Contract, Router, Antenna, Package
+from core.models import Contract, Router, Antenna, Package, Log
 
 
 class RouterSerializer(FlexFieldsModelSerializer):
@@ -30,7 +30,15 @@ class PackageSerializer(serializers.ModelSerializer):
         model = Package
         fields = ('id', 'name', 'type', 'price','available','updated', 'created')
         read_only_fields = ('id',)
-        
+
+
+class LogSerializer(serializers.ModelSerializer):
+    """Serializer for log objects"""
+
+    class Meta:
+        model = Log
+        fields = ('id', 'user', 'contract', 'log', 'updated')
+        read_only_fields = ('id',)
 
 
 class ContractSerializerGET(FlexFieldsModelSerializer):
@@ -85,7 +93,7 @@ class ContractSerializerPOST(FlexFieldsModelSerializer):
     class Meta:
         model = Contract
         fields = (
-            'id', 'user', 'referral', 'contract_no', 'organization', 'contract_type',
+            'id', 'referral', 'contract_no', 'organization', 'contract_type',
             'router', 'antenna','poc_name', 'poc_number', 'poc_email', 'address',
             'packages', 'package_price', 'rou_cond',
             'rou_dec', 'rou_qty', 'rou_amnt', 'rou_lease_amnt', 'rou_amnt_totl', 'rou_collected',

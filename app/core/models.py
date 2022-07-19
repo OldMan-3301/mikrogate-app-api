@@ -38,6 +38,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
+    def __str__(self):
+        return self.name
+
 
 class Router(models.Model):
     """Device to bes used in a contract"""

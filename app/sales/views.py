@@ -7,7 +7,7 @@ from django.db.models import Q
 
 from rest_flex_fields import FlexFieldsModelViewSet
 
-from core.models import Router, Antenna, Package, Contract
+from core.models import Router, Antenna, Package, Contract, Log
 
 from sales import serializers
 
@@ -23,7 +23,7 @@ class BaseSaleAttrViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return objects for current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
+        return self.queryset.all().order_by('-name')
 
     def perform_create(self, serializer):
         """Create a new object"""
@@ -46,6 +46,31 @@ class PackageViewSet(BaseSaleAttrViewSet):
     """Manage packages in the database"""
     queryset = Package.objects.all()
     serializer_class = serializers.PackageSerializer
+
+
+class LogViewSet(viewsets.ModelViewSet):
+    """Manage logs in the database"""
+    queryset = Log.objects.all()
+    serializer_class = serializers.LogSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """Return objects for current authenticated user only"""
+
+        contract_no = self.request.query_params.get('contract-no')
+
+
+        queryset = self.queryset
+
+        if contract_no:
+            return queryset.filter(contract__icontains=contract_no).order_by('-updated')
+        else:
+            return queryset.all().order_by('-updated')
+
+    def perform_create(self, serializer):
+        """Create a new object"""
+        serializer.save(user=self.request.user)
 
 
 class ContractViewSet(FlexFieldsModelViewSet):
@@ -72,6 +97,7 @@ class ContractViewSet(FlexFieldsModelViewSet):
         contract_no = self.request.query_params.get('contract-no')
         poc_number = self.request.query_params.get('poc_number')
         router = self.request.query_params.get('has-router')
+        antenna = self.request.query_params.get('has-antenna')
         package = self.request.query_params.get('has-package')
         device_type = self.request.query_params.get('device-type')
         package_type = self.request.query_params.get('package-type')
@@ -128,6 +154,12 @@ class ContractViewSet(FlexFieldsModelViewSet):
         
         if router == "0":
             return queryset.filter(router=True)
+
+        if antenna == "1":
+            return queryset.filter(antenna__isnull=False)
+        
+        if antenna == "0":
+            return queryset.filter(antenna=True)
 
         if package == "1":
             return queryset.filter(packages__isnull=False)
